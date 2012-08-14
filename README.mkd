@@ -1,6 +1,6 @@
 # vladd
 
-**vladd** is a fixed-precision edititing calculator, not unlike [Thomas
+**vladd** is a fixed-precision editing calculator, not unlike [Thomas
 Dickey](http://invisibile-island.net)'s [add](http://invisible-island.net/add/),
 but graphical. It's a bit like one of those old-fashioned printing calculators.
 
