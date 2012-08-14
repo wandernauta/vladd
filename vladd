@@ -193,7 +193,6 @@ class Vladd:
 
                 # Display with two decimals, then round to displayed value
                 cents = int(math.floor(val * 100))
-                print val, cents
                 row[2] = "%.02f" % (cents / 100.0)
                 val = cents / 100.0
             except ValueError:
