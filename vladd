@@ -1,0 +1,219 @@
+#!/usr/bin/env python2
+# -*- coding: utf8 -*-
+
+# This is vladd, the editing calculator.
+# 
+# Copyright 2012 Wander Nauta/TWNC
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+import pygtk
+pygtk.require('2.0')
+import gtk
+import gobject
+import webbrowser
+
+class AboutWindow:
+    def __init__(self, mainwin):
+        self.window = mainwin.builder.get_object("aboutwin")
+        self.window.show_all()
+
+class Vladd:
+    builder = None
+    window = None
+    liststore = None
+    path = ""
+
+    sym = {
+            'plus': '+',
+            'minus': '−',
+            'slash': '÷',
+            'asterisk': '×',
+            'equals': '=',
+            'asciicircum': '^',
+    }
+
+    # Initialization
+    def __init__(self):
+        self.builder = gtk.Builder()
+        self.builder.add_from_file("ui.xml")
+        self.builder.connect_signals(self)
+        self.window = self.builder.get_object("mainwin")
+        self.window.show_all()
+        
+        self.liststore = gtk.ListStore(str, str, str)
+        self.treeview = self.builder.get_object("maintv")
+
+        for i in range(3):
+            col = gtk.TreeViewColumn(str(i))
+            cell = gtk.CellRendererText()
+            cell.set_padding(5, 5)
+            if (i == 2):
+                cell.set_property("foreground", "gray")
+            col.pack_start(cell, True)
+            col.add_attribute(cell, 'text', i)
+            self.treeview.append_column(col)
+
+        self.treeview.set_model(self.liststore)
+        self.calc()
+        self.liststore.append(("+", "", ""))
+        self.treeview.grab_focus()
+
+
+    def main(self):
+        gtk.main()
+
+    # Menu item callbacks
+    def new_cb(self, widget, data=None):
+        self.path = ""
+        self.clear_cb()
+
+    def open_cb(self, widget, data=None):
+        pass
+
+    def save_cb(self, widget, data=None):
+        pass
+
+    def saveas_cb(self, widget, data=None):
+        pass
+
+    def about_cb(self, widget, data=None):
+        self.aw = AboutWindow(self)
+
+    def about_close_cb(self, widget, data=None):
+        self.aw.window.hide()
+        del self.aw
+
+    def clear_cb(self = None, widget = None, data=None):
+        self.liststore.clear()
+        self.liststore.append(("+", "", ""))
+        self.treeview.set_cursor(0)
+    
+    def keyhelp_cb(self, widget, data=None):
+        msg = ""
+        msg += "vladd understands the following keys:\n"
+        msg += "\n"
+        msg += "+\tAddition\n"
+        msg += "-\tSubstraction\n"
+        msg += "*\tMultiplication\n"
+        msg += "/\tDivision\n"
+        msg += "^\tPower\n"
+        msg += "\n"
+        msg += "g\tGo to top\n"
+        msg += "G\tGo to bottom\n"
+        msg += "o\tOpen new line below\n"
+        msg += "O\tOpen new line above"
+
+        dialog = gtk.MessageDialog(buttons=gtk.BUTTONS_CLOSE, message_format=msg)
+        dialog.run()
+        dialog.destroy()
+
+    def help_cb(self, widget, data=None):
+        webbrowser.open("http://twnc.org/vladd/")
+
+    # This is where the magic happens
+    def key_cb(self, widget, data=None):
+        numrows = self.liststore.iter_n_children(None)
+        keyname = gtk.gdk.keyval_name(data.keyval)
+        row = self.treeview.get_cursor()[0][0]
+        rowiter = self.liststore.get_iter(row)
+
+        if keyname in self.sym.keys():
+            if not len(self.liststore.get(rowiter, 1)[0]):
+                self.liststore.set(rowiter, 0, self.sym[keyname])
+            else:
+                self.liststore.append((self.sym[keyname], "", ""))
+                self.treeview.set_cursor(str(numrows))
+        elif keyname in list("0123456789"):
+            self.liststore.set(rowiter, 1, self.liststore.get(rowiter, 1)[0] + keyname)
+        elif keyname == "period":
+            self.liststore.set(rowiter, 1, self.liststore.get(rowiter, 1)[0] + ".")
+        elif keyname == "g" and numrows: # Go to top
+            self.treeview.set_cursor(0)
+        elif keyname == "G" and numrows: # Go to bottom
+            self.treeview.set_cursor(numrows - 1)
+        elif keyname == "j" and numrows and row + 1 < numrows: # Go down
+            self.treeview.set_cursor(row + 1)
+        elif keyname == "k" and numrows and row > 0: # Go up
+            self.treeview.set_cursor(row - 1)
+        elif (keyname == "x" or keyname == "d") and numrows > 1: # Delete row
+            self.liststore.remove(rowiter)
+            self.treeview.set_cursor(row - 1)
+        elif keyname == "o": # Insert row after
+            self.liststore.insert_after(rowiter, ("+", "", ""))
+            self.treeview.set_cursor(row + 1)
+        elif keyname == "O": # Insert row before
+            self.liststore.insert_before(rowiter, ("+", "", ""))
+            self.treeview.set_cursor(row)
+        elif keyname == "BackSpace" or keyname == "Delete":
+            if len(self.liststore.get(rowiter, 1)[0]):
+                val = self.liststore.get(rowiter, 1)[0]
+                val = val[:-1]
+                self.liststore.set(rowiter, 1, val)
+            else:
+                if numrows > 1:
+                    self.liststore.remove(rowiter)
+        
+        self.calc()
+
+    # Recalculate
+    def calc(self):
+        val = 0
+
+        for i, row in enumerate(self.liststore):
+            try:
+                if row[0] == self.sym['plus']:
+                    val += float(row[1])
+                elif row[0] == self.sym['minus']:
+                    val -= float(row[1])
+                elif row[0] == self.sym['slash']:
+                    val = val / float(row[1])
+                elif row[0] == self.sym['asterisk']:
+                    val = val * float(row[1])
+                elif row[0] == self.sym['asciicircum']:
+                    val = val ** float(row[1])
+
+                # Display with two decimals, then round to displayed value
+                row[2] = "%.02f" % val
+                val = float(row[2])
+            except ValueError:
+                row[2] = ""
+            except ZeroDivisionError:
+                row[2] = ""
+
+    # Housekeeping callbacks
+    def quit_cb(self, widget, data=None):
+        gtk.main_quit()
+
+    def delete_event(self, widget,  data=None):
+        return False # Destroy unconditionally
+
+    def destroy(self, widget, data=None):
+        gtk.main_quit()
+
+if __name__ == "__main__":
+    vladd = Vladd()
+
+    try:
+        vladd.main()
+    except KeyboardInterrupt:
+        # We don't really care
+        pass
+
+# vim: set ts=4 sw=4 sta et sts=4 ai nosi:

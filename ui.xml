@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<!--
+     This UI definition is part of vladd, the editing calculator.
+     vladd is Copyright 2012 Wander Nauta/TWNC.
+     See the COPYING file for license details.
+-->
+<interface>
+  <object class="GtkAboutDialog" id="aboutwin">
+    <property name="version">0.1</property>
+    <property name="website">http://twnc.org/vladd</property>
+    <property name="copyright">Copyright 2012 Wander Nauta/TWNC</property>
+    <property name="wrap-license">True</property>
+    <property name="license">Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+      
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+      
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    </property>
+    <signal handler="about_close_cb" name="response" />
+  </object>
+  <object class="GtkWindow" id="mainwin">
+    <property name="visible">True</property>
+    <property name="default-height">450</property>
+    <property name="default-width">350</property>
+
+    <signal handler="destroy" name="destroy"/>
+    <signal handler="delete_event" name="delete_event"/>
+    <child>
+      <object class="GtkVBox" id="mainvbox">
+        <child>
+          <object class="GtkMenuBar" id="mainmenu">
+            <child>
+              <object class="GtkMenuItem" id="filem">
+                <property name="label">File</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="filemenu">
+                    <child>
+                      <object class="GtkImageMenuItem" id="file_new">
+                        <property name="label">gtk-new</property>
+                        <property name="use_stock">True</property>
+                        <signal handler="new_cb" name="activate" />
+                      </object>
+                    </child>
+                    <!--
+                    <child>
+                      <object class="GtkImageMenuItem" id="file_open">
+                        <property name="label">gtk-open</property>
+                        <property name="use_stock">True</property>
+                        <signal handler="open_cb" name="activate" />
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="sep1">
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="file_save">
+                        <property name="label">gtk-save</property>
+                        <property name="use_stock">True</property>
+                        <signal handler="save_cb" name="activate" />
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="file_saveas">
+                        <property name="label">gtk-save-as</property>
+                        <property name="use_stock">True</property>
+                        <signal handler="saveas_cb" name="activate" />
+                      </object>
+                    </child>
+                    -->
+                    <child>
+                      <object class="GtkMenuItem" id="sep2">
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="file_quit">
+                        <property name="label">gtk-quit</property>
+                        <property name="use_stock">True</property>
+                        <signal handler="quit_cb" name="activate" />
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="editm">
+                <property name="label">Edit</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="editmenu">
+                    <child>
+                      <object class="GtkImageMenuItem" id="edit_clear">
+                        <property name="label">gtk-clear</property>
+                        <property name="use_stock">True</property>
+                        <signal handler="clear_cb" name="activate" />
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="helpm">
+                <property name="label">Help</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="helpmenu">
+                    <child>
+                      <object class="GtkImageMenuItem" id="help_help">
+                        <property name="label">gtk-help</property>
+                        <property name="use_stock">True</property>
+                        <signal handler="help_cb" name="activate" />
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="help_keys">
+                        <property name="label">Hotkeys</property>
+                        <signal handler="keyhelp_cb" name="activate" />
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="sep3">
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="help_about">
+                        <property name="label">gtk-about</property>
+                        <property name="use_stock">True</property>
+                        <signal handler="about_cb" name="activate" />
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkTreeView" id="maintv">
+            <signal handler="key_cb" name="key-press-event" />
+            <property name="headers-visible">False</property>
+            <property name="enable-search">False</property>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkStatusbar" id="status">
+          </object>
+          <packing>
+            <property name="expand">False</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
