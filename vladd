@@ -119,6 +119,7 @@ class Vladd:
         msg += "G\tGo to bottom\n"
         msg += "o\tOpen new line below\n"
         msg += "O\tOpen new line above"
+        msg += "d\tDelete line\n"
 
         dialog = gtk.MessageDialog(buttons=gtk.BUTTONS_CLOSE, message_format=msg)
         dialog.run()
