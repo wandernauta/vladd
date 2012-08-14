@@ -6,5 +6,8 @@ but graphical. It's a bit like one of those old-fashioned printing calculators.
 
 ![Screenshot](http://i.imgur.com/kRN5m.png)
 
-It supports addition, substraction, multiplication, division, and power, and it
-has some nifty vi-like keys.
+Because vladd keeps intermediate results, you can correct mistakes made much
+earlier instead of having to re-enter the entire calculation.
+
+vladd supports addition, substraction, multiplication, division, and power, and it
+has some nifty vi-like keys. It's also quite fast.
